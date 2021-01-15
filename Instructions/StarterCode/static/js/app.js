@@ -30,12 +30,15 @@ function buildCharts(sample) {
     // Read the json data
     d3.json("samples.json").then(function(data){
         // Parse and filter the data to get the sample's OTU data
-        let filterSample = data.samples.filter(d => d.sample_values=== parseInt(sample))
-        var sample_data = filterSample[0]
-        console.log(sample_data)
+        let filterSample = data.samples.filter(d => d.id === sample)
+        let sample_data = filterSample[0]
+
+        let otu_ids = sample_data.otu_ids;
+        let otu_labels = sample_data.otu_labels;
+        let sample_values = sample_data.sample_values;
 
         // sort the data
-        var sorted = filterSample.sort(function sortFunction(a, b) {
+        var sorted = sample_values.sort(function sortFunction(a, b) {
             return b.sample_values - a.sample_values;
           });
 
@@ -45,7 +48,6 @@ slicedData = sorted.slice(0, 10);
 // Reverse the array to accommodate Plotly's defaults
 reversedData = slicedData.reverse();
 
-// ONLY RETURNS 10 IDs, NOT THE TOP 10 SAMPLE VALUES
 // console.log(reversedData)
 
 // Trace1 for the OTU Data

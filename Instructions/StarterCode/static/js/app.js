@@ -30,10 +30,12 @@ function buildCharts(sample) {
     // Read the json data
     d3.json("samples.json").then(function(data){
         // Parse and filter the data to get the sample's OTU data
-        let filterSample = data.samples.filter(d => d.id === sample)
+        let filterSample = data.samples.filter(d => d.id==sample)
+    
         let sample_data = filterSample[0]
 
         let otu_ids = sample_data.otu_ids;
+        
         let otu_labels = sample_data.otu_labels;
         let sample_values = sample_data.sample_values;
 
@@ -41,7 +43,7 @@ function buildCharts(sample) {
         var sorted = sample_values.sort(function sortFunction(a, b) {
             return b.sample_values - a.sample_values;
           });
-
+          
 // Slice the first 10 objects for plotting
 slicedData = sorted.slice(0, 10);
 
@@ -52,9 +54,9 @@ reversedData = slicedData.reverse();
 
 // Trace1 for the OTU Data
 var trace1 = {
-  x: reversedData.map(object => object.sample_values),
-  y: reversedData.map(object => object.otu_ids),
-  text: reversedData.map(object => object.otu_labels),
+  x: slicedData,
+  y: otu_ids.slice(0, 10).map(object => `OTU ${object}`).reverse(), 
+  text: otu_labels.slice(0, 10).reverse(),
   name: "Top 10 OTUs",
   type: "bar",
   orientation: "h"
@@ -76,42 +78,35 @@ var layout = {
 
  // Create bar chart in correct location
 Plotly.newPlot("bar", data, layout);    
+
+
+
+var bubbleData = [{
+    x: otu_ids,
+    y: sample_values,
+    mode: 'markers',
+    text: otu_labels,
+    marker: {
+    size: sample_values,
+    color: otu_ids,
+    }
+}];
+
+var bubblelayout = {
+    title: 'Bacteria Cultures per Sample',
+    margin: {t:0},
+    xaxis: {title: "OTU ID"},
+    margin: {t: 30}
+};
+
+Plotly.newPlot('bubble', bubbleData, bubblelayout);
+    
             
-          });
+ });
 
-        
-        // data.samples---filter data 
-        // will output a dictionary of arrays
-        // slice and reverse
-        // make the OTUid a string otu then the id, ex: otu1150
-        // Pay attention to what data is required for each chart
-
+}
        
 
-        // Create bubble chart in correct location
-        // <div id="bubble"></div>
-        // don't need to slice and reverse
-
-        var trace1 = {
-            x: [1, 2, 3, 4],
-            y: [10, 11, 12, 13],
-            mode: 'markers',
-            marker: {
-              size: [40, 60, 80, 100]
-            }
-          };
-          
-          var data = [trace1];
-          
-          var layout = {
-            title: 'Marker Size',
-            showlegend: false,
-            height: 600,
-            width: 600
-          };
-          
-          Plotly.newPlot('bubble', data, layout);
-}
 
 // Define function that will run on page load
 function init() {
@@ -146,7 +141,7 @@ function optionChanged(newSample){
     buildMetadata(newSample);
     buildCharts(newSample);
     // Update charts with newly selected sample
-
+console.log(newSample)
 }
 
 // Initialize dashboard on page load

@@ -1,6 +1,4 @@
-/* The following is an example on how you might structure your code.
-This is not the only way to complete this assignment.
-Feel free to disregard and create your own code */
+
 
 // Define a function that will create metadata for given sample
 function buildMetadata(sample) {
